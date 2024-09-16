@@ -70,7 +70,3 @@ If you encounter issues with extracting the correct HTML content:
 ## Contributing
 
 Feel free to fork this project and submit pull requests with any enhancements. Please ensure that any contributions adhere to the ethical guidelines outlined in this README.
-
-## License
-
-[Specify the license here, e.g., MIT, GPL, etc.]

@@ -3,11 +3,11 @@ import urllib.request
 import concurrent.futures
 
 
-# Assuming you have the HTML in a file called "example.html"
+#Assuming you have the HTML in a file called "example.html"
 with open('example.html',encoding='utf-8') as html_file:
     soup = BeautifulSoup(html_file, 'html.parser')
 
-# Converting the HTML to JSON
+#Converting the HTML to JSON
 json_data = {}
 for tag in soup.find_all(True):
     tag_name = tag.name
@@ -25,7 +25,7 @@ for tag in soup.find_all(True):
         else:
             json_data[tag_name] = [tag.string]
 
-# Outputting the JSON data to a file called "example.json"
+#Outputting the JSON data to a file called "example.json"
 
     
 destination = '/Users/vishal04/Desktop/Image_Download_from_Gmap_by_user/'
@@ -52,7 +52,7 @@ def main(url):
 
 
 def main2():
-    # Run request concurrently.
+    #Run request concurrently.
     with concurrent.futures.ThreadPoolExecutor(max_workers=100) as Executor:
         # Local variable.
         # Load executor with url to fetch and work on.

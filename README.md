@@ -1,72 +1,180 @@
 # Google Maps Image Downloader
 
-This Python script downloads high-resolution images from Google Maps based on HTML content containing image tags from user-uploaded photos in reviews.
+A Python script to extract and download images from Google Maps HTML content with concurrent processing for faster downloads.
 
-## Important Disclaimer
+## 🚀 Features
 
-This tool is intended for educational purposes only. Do not use it for any malicious or unethical purposes. Respect user privacy, copyright laws, and Google's terms of service. The authors and contributors are not responsible for any misuse of this tool.
+- **HTML Parsing**: Extracts image URLs from Google Maps HTML files
+- **Concurrent Downloads**: Uses ThreadPoolExecutor for fast parallel downloads
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Error Handling**: Robust error handling with retry mechanisms
+- **Progress Tracking**: Real-time download progress monitoring
+- **File Safety**: Automatic filename sanitization and duplicate checking
 
-## Files
+## 📋 Prerequisites
 
-- `Main.py`: The main script that handles the image downloading process.
-- `Example.html`: An HTML file containing img tags with Google Maps image URLs.
+- Python 3.6 or higher
+- Required Python packages (see [Installation](#installation))
 
-## Features
+## 🛠️ Installation
 
-- Extracts image URLs from an HTML file
-- Downloads high-resolution images from Google Maps user-uploaded photos
-- Fast and efficient downloading process
-
-## Requirements
-
-- Python 3.x
-- Required Python libraries (list them here, e.g., requests, BeautifulSoup4)
-
-## Usage
-
-1. Ensure you have the required Python libraries installed:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/vishal-04-singh/Google-Maps-Image-Downloader.git
+   cd Google-Maps-Image-Downloader
    ```
+
+2. **Install required packages:**
+   ```bash
+   pip install beautifulsoup4 requests
+   ```
+
+   Or install from requirements file:
+   ```bash
    pip install -r requirements.txt
    ```
 
-2. Obtain the HTML content for `Example.html`:
-   a. Go to Google Maps and search for a famous place.
-   b. Navigate to the review section of the place.
-   c. Find a user who has uploaded multiple images and click on their profile.
-   d. In the user's profile, go to the photo section.
-   e. Scroll down to the bottom of the page.
-   f. Right-click on the scroll bar and select "Inspect" to open the developer tools.
-   g. Press F2 on your keyboard to edit the HTML section.
-   h. Copy the relevant HTML content containing the img tags.
-   i. Paste this content into a new file named `Example.html` in the same directory as the script.
+## 📖 Usage
 
-3. Run the script:
-   ```
-   python main.py
+### Basic Usage
+
+1. **Prepare your HTML file:**
+   - Save your Google Maps HTML content as `example.html` in the project directory
+   - The HTML should contain `<img>` tags with Google Maps image URLs
+
+2. **Update the destination path:**
+   ```python
+   destination = '/path/to/your/download/folder/'
    ```
 
-4. The script will process the HTML file, extract image URLs, and download the high-resolution images to the current directory.
+3. **Run the script:**
+   ```bash
+   python image_downloader.py
+   ```
 
-## How It Works
+### Example
 
-The script reads the `Example.html` file, which contains img tags from Google Maps user-uploaded photos. It extracts the image URLs from these tags and then downloads the corresponding high-resolution images.
+```python
+from bs4 import BeautifulSoup
+import urllib.request
+import concurrent.futures
+import os
 
-## Ethical Use and Legal Considerations
+# Your HTML file containing Google Maps images
+with open('example.html', encoding='utf-8') as html_file:
+    soup = BeautifulSoup(html_file, 'html.parser')
 
-- This tool is for educational and research purposes only.
-- Do not use this tool to violate privacy or copyright laws.
-- Obtain proper permissions before downloading or using images.
-- Respect Google's terms of service and the rights of content creators.
-- Do not use the downloaded images for commercial purposes without proper authorization.
-- Be aware of and comply with local and international laws regarding web scraping and data collection.
+# Set your download destination
+destination = '/Users/username/Downloads/google_maps_images/'
 
-## Troubleshooting
+# Run the downloader
+# The script will automatically extract and download all images
+```
 
-If you encounter issues with extracting the correct HTML content:
-- Make sure you've scrolled to the bottom of the user's photo section to load all images.
-- Verify that the copied HTML contains the necessary img tags with the image URLs.
-- Check that the `Example.html` file is properly formatted and saved in the correct location.
+## 🏗️ Project Structure
 
-## Contributing
+```
+Google-Maps-Image-Downloader/
+│
+├── image_downloader.py          # Main script (original version)
+├── fixed_image_downloader.py    # Fixed version with better error handling
+├── enhanced_version.py          # Enhanced version with requests library
+├── example.html                 # Sample HTML file (you provide this)
+├── requirements.txt             # Python dependencies
+└── README.md                   # This file
+```
 
-Feel free to fork this project and submit pull requests with any enhancements. Please ensure that any contributions adhere to the ethical guidelines outlined in this README.
+## 🔧 Configuration
+
+### Download Settings
+
+- **Max Workers**: Adjust the number of concurrent downloads
+  ```python
+  max_workers=10  # Recommended: 5-10 for stability
+  ```
+
+- **Destination Path**: Set your preferred download location
+  ```python
+  destination = '/your/preferred/path/'
+  ```
+
+- **Image Quality**: Modify URL parameters for different image sizes
+  ```python
+  line = i['src'].split('=')[0] + '=s0'  # s0 = original size
+  ```
+
+## 🚨 Common Issues & Solutions
+
+### Issue 1: File Path Errors
+```
+[Errno 2] No such file or directory
+```
+**Solution**: Ensure the destination directory exists and use proper path separators.
+
+### Issue 2: Download Failures
+**Solution**: The script includes automatic retry mechanisms and better error handling in the enhanced version.
+
+### Issue 3: HTML File Not Found
+**Solution**: Make sure `example.html` is in the same directory as the script.
+
+## 📝 Code Versions
+
+### 1. Original Version (`image_downloader.py`)
+- Basic functionality with backslash path issues
+
+### 2. Fixed Version (`fixed_image_downloader.py`)
+- ✅ Cross-platform path handling
+- ✅ Directory creation
+- ✅ Better error handling
+- ✅ Progress tracking
+
+### 3. Enhanced Version (`enhanced_version.py`)
+- ✅ Uses `requests` library for better HTTP handling
+- ✅ Session management for connection reuse
+- ✅ File existence checking
+- ✅ User-Agent headers
+- ✅ Rate limiting
+- ✅ Success/failure statistics
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+- This tool is for educational purposes
+- Respect Google's Terms of Service and rate limits
+- Ensure you have permission to download the images
+- The script includes respectful delays to avoid overwhelming servers
+
+## 🐛 Known Issues
+
+- Large concurrent downloads may be rate-limited
+- Some Google Maps URLs may require authentication
+- Filename sanitization may alter original names
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/vishal-04-singh/Google-Maps-Image-Downloader/issues) section
+2. Create a new issue with detailed information
+3. Contact: [Your Contact Information]
+
+## 🙏 Acknowledgments
+
+- BeautifulSoup4 for HTML parsing
+- Python's concurrent.futures for parallel processing
+- Google Maps for the image source
+
+---
+
+**Star ⭐ this repository if you found it helpful!**

@@ -1,13 +1,18 @@
 from bs4 import BeautifulSoup
 import urllib.request
 import concurrent.futures
+import os
+import json
 
+# Assuming you have the HTML in a file called "example.html"
+try:
+    with open('example.html', encoding='utf-8') as html_file:
+        soup = BeautifulSoup(html_file, 'html.parser')
+except FileNotFoundError:
+    print("Error: 'example.html' file not found. Please make sure the file exists.")
+    exit(1)
 
-#Assuming you have the HTML in a file called "example.html"
-with open('example.html',encoding='utf-8') as html_file:
-    soup = BeautifulSoup(html_file, 'html.parser')
-
-#Converting the HTML to JSON
+# Converting the HTML to JSON
 json_data = {}
 for tag in soup.find_all(True):
     tag_name = tag.name
@@ -25,46 +30,65 @@ for tag in soup.find_all(True):
         else:
             json_data[tag_name] = [tag.string]
 
-#Outputting the JSON data to a file called "example.json"
+# Create destination directory if it doesn't exist
+destination = '/Users/vishal04/Developer/Google-Maps-Image-Downloader/images'
+os.makedirs(destination, exist_ok=True)
 
-    
-destination = '/Users/vishal04/Desktop/Image_Download_from_Gmap_by_user/'
 urls = []
 
+# Check if 'img' key exists in json_data
+if 'img' not in json_data:
+    print("No 'img' tags found in the HTML file.")
+    exit(1)
+
 for i in json_data['img']:
-    line = i['src'].split('=')[0]+'=s0*#@' + i['src'].split('=')[0].split('/')[-1]+'.jpg'
-    urls.append(line)
+    if 'src' in i and i['src']:  # Check if src attribute exists and is not empty
+        try:
+            line = i['src'].split('=')[0] + '=s0*#@' + i['src'].split('=')[0].split('/')[-1] + '.jpg'
+            urls.append(line)
+        except IndexError:
+            print(f"Skipping malformed URL: {i['src']}")
+            continue
 
+n = 0
 
-       
-n=0
 def main(url):
     global n
     try:
-      urllib.request.urlretrieve(url.split('*#@')[0],destination+"\\"+url.split('*#@')[1])
-    except:         
-        try:
-            urllib.request.urlretrieve(url.split('*#@')[0],destination+"\\"+url.split('*#@')[1])
-        except Exception as e:      
-            print(e)
-    n+=1
-    print(n)
-
+        # Use os.path.join for proper path construction
+        filename = url.split('*#@')[1]
+        # Sanitize filename to remove invalid characters
+        filename = "".join(c for c in filename if c.isalnum() or c in ('-', '_', '.')).rstrip()
+        filepath = os.path.join(destination, filename)
+        
+        urllib.request.urlretrieve(url.split('*#@')[0], filepath)
+        print(f"Downloaded: {filename}")
+    except Exception as e:
+        print(f"Error downloading {url.split('*#@')[1] if '*#@' in url else url}: {e}")
+    
+    n += 1
+    print(f"Progress: {n}/{len(urls)}")
 
 def main2():
-    #Run request concurrently.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as Executor:
-        # Local variable.
-        # Load executor with url to fetch and work on.
-        future_to_url = {Executor.submit(
-            main, url=url): url for url in urls}
-        # Loop over futures request and mark them completed.
+    if not urls:
+        print("No URLs to download.")
+        return
+    
+    print(f"Starting download of {len(urls)} images...")
+    
+    # Run requests concurrently
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:  # Reduced workers to be more respectful
+        # Load executor with urls to fetch
+        future_to_url = {executor.submit(main, url=url): url for url in urls}
+        
+        # Loop over futures and handle completion
         for future in concurrent.futures.as_completed(future_to_url):
             url = future_to_url[future]
             try:
-                data = future.result()
+                future.result()
             except Exception as e:
-                # Raise exception.
-                raise(e)
+                print(f"Exception occurred for {url}: {e}")
+
 if __name__ == '__main__':
     main2()
+    print("Download process completed!")
